@@ -62,7 +62,6 @@ class Agent:
             game.food.x > game.head.x  # food rigth
             game.food.y < game.head.y  # food.up
             game.food.y > game.head.y  # food down
-
         ]
 
         return np.array(state, dtype=int)
@@ -86,7 +85,19 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        pass
+        # Hago unos movimientos aleatorios para lograr una mezcla de exploracion y movimientos aleatorios. Luego empezamos a cambiar agregando mas movimientos calculados y menos aleatoreos
+        self.epsilon = 80 - self.n_games  # a mas juegos mas pequeño epsilon
+        final_move = [0, 0, 0]
+        if random.randint(0, 200) < self.epsilon:  # Mas pequeño epsilon menos aleatoreo
+            move = random.randint(0, 2)
+            final_move[move] = 1
+        else:
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model.predict(state0)
+            move = torch.argmax(prediction).item()
+            final_move = 1
+
+        return final_move
 
 
 def train():
