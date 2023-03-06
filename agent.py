@@ -60,9 +60,9 @@ class Agent:
             dir_d,
 
             # Food location
-            game.food.x < game.head.x  # food left
-            game.food.x > game.head.x  # food rigth
-            game.food.y < game.head.y  # food.up
+            game.food.x < game.head.x,  # food left
+            game.food.x > game.head.x,  # food rigth
+            game.food.y < game.head.y,  # food.up
             game.food.y > game.head.y  # food down
         ]
 
@@ -138,6 +138,12 @@ def train():
                 agent.model.save()
 
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
+
+            plot.scores.append(score)
+            total_score += score
+            mean_score = total_score / agent.n_games
+            plot.mean_scores.append(mean_score)
+            plot(plot_scores, plot_mean_scores)
 
 
 if __name__ == '__main__':
