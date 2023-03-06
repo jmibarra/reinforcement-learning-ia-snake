@@ -11,7 +11,7 @@ class Linear_QNet(nn.Module):
         self.linear1 = nn.Linear(input_size, hidden_size)
         self.linear2 = nn.Linear(hidden_size, output_size)
 
-    def fordwar(self, x):
+    def forward(self, x):
         x = F.relu(self.linear1(x))
         x = self.linear2(x)
         return x
@@ -22,7 +22,7 @@ class Linear_QNet(nn.Module):
             os.makedirs(model_folder_path)
 
         file_name = os.path.join(model_folder_path, file_name)
-        torch.save(self.state.dict(), file_name)
+        torch.save(self.state_dict(), file_name)
 
 
 class QTrainer:
@@ -30,7 +30,7 @@ class QTrainer:
         self.lr = lr
         self.gamma = gamma
         self.model = model
-        self.optimizer = optim.Adam(model.paremeters(), lr=self.lr)
+        self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
         self.criterion = nn.MSELoss()
 
     def train_step(self, state, action, reward, next_state, done):
@@ -46,23 +46,23 @@ class QTrainer:
             reward = torch.unsqueeze(reward, 0)
             done = (done, )
 
-            # Ecuacion de Bellman
-            # Valor predecido de Q con el estado actual
-            pred = self.model(state)
+        # Ecuacion de Bellman
+        # Valor predecido de Q con el estado actual
+        pred = self.model(state)
 
-            target = pred.clone()
-            for idx in range(len(done)):
-                Q_new = reward[idx]
-                if not done[idx]:
-                    Q_new = reward[idx] + self.gamme * \
-                        torch.max(self.model(next_state[idx]))
+        target = pred.clone()
+        for idx in range(len(done)):
+            Q_new = reward[idx]
+            if not done[idx]:
+                Q_new = reward[idx] + self.gamma * \
+                    torch.max(self.model(next_state[idx]))
 
-                target[idx][torch.argmax(action).item()] = Q_new
+            target[idx][torch.argmax(action).item()] = Q_new
 
-            # Paso2: Qnew = r + y * max(next pred valor Q ) -> solo si no Done
+        # Paso2: Qnew = r + y * max(next pred valor Q ) -> solo si no Done
 
-            self.optimizer.zero_grad()
-            loss = self.criterion(target, pred)
-            loss.backward()
+        self.optimizer.zero_grad()
+        loss = self.criterion(target, pred)
+        loss.backward()
 
-            self.optimizer.step()
+        self.optimizer.step()

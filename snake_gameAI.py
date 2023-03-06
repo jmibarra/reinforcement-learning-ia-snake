@@ -40,19 +40,19 @@ class SnakeGameAI:
         self.clock = pygame.time.Clock()
         self.reset()
 
-        def reset(self):
-            # init game state
-            self.direction = Direction.RIGHT
+    def reset(self):
+        # init game state
+        self.direction = Direction.RIGHT
 
-            self.head = Point(self.w/2, self.h/2)
-            self.snake = [self.head,
-                          Point(self.head.x-BLOCK_SIZE, self.head.y),
-                          Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
+        self.head = Point(self.w/2, self.h/2)
+        self.snake = [self.head,
+                      Point(self.head.x-BLOCK_SIZE, self.head.y),
+                      Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
 
-            self.score = 0
-            self.food = None
-            self._place_food()
-            self.frame_iteration = 0
+        self.score = 0
+        self.food = None
+        self._place_food()
+        self.frame_iteration = 0
 
     def _place_food(self):
         x = random.randint(0, (self.w-BLOCK_SIZE)//BLOCK_SIZE)*BLOCK_SIZE
@@ -125,12 +125,12 @@ class SnakeGameAI:
         pygame.display.flip()
 
     def _move(self, action):
-        # [straigh,rigth,left]
+        # [straigh,right,left]
 
         clock_wise = [Direction.RIGHT, Direction.DOWN,
                       Direction.LEFT, Direction.UP]
 
-        idx = clock_wise.index(self.directions)
+        idx = clock_wise.index(self.direction)
 
         if np.array_equal(action, [1, 0, 0]):
             new_dir = clock_wise[idx]  # no cambia
